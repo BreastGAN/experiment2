@@ -1,0 +1,165 @@
+= BreastGAN
+
+BreastGAN, second experiment.
+
+=== https://arxiv.org/abs/1811.07767[Paper]
+
+https://github.com/BreastGAN/[Injecting and removing malignant features in mammography with CycleGAN: Investigation of an automated adversarial attack using neural networks]
+
+https://www.researchgate.net/profile/Anton_Becker2[Anton S. Becker] 1,2),
+https://www.researchgate.net/profile/Lukas_Jendele[Lukas Jendele]* 3),
+https://oskopek.com/[Ondrej Skopek]* 3),
+Nicole Berger 1),
+Soleen Ghafoor 1,4),
+Magda Marcon 1),
+http://www.vision.ee.ethz.ch/~kender/[Ender Konukoglu] 5)
+
+1. Institute of Diagnostic and Interventional Radiology, University Hospital of Zurich; Zurich, Switzerland
+2. Department of Health Sciences and Technology, ETH Zurich; Zurich, Switzerland
+3. Department of Computer Science, ETH Zurich
+4. Department of Radiology, Memorial Sloan Kettering Cancer Center, New York City, USA
+5. Computer Vision Laboratory, Department of Information Technology and Electrical Engineering, ETH Zurich
+
+In arXiv, 2018. (* joint contribution)
+
+Correspondence to: Anton S. Becker, Institute of Diagnostic and Interventional Radiology, UniversitätsSpital Zürich, Raemistrasse 100, CH-8091 Zürich
+
+E-Mail: anton.becker@usz.ch
+
+== Citation
+If you use this code for your research, please cite our https://arxiv.org/abs/1811.07767[paper]:
+
+```
+@article{BreastGAN2018,
+  title={{Injecting and removing malignant features in mammography with CycleGAN: Investigation of an automated adversarial attack using neural networks}},
+  author={Becker, Anton S and Jendele, Lukas and Skopek, Ondrej and Berger, Nicole and Ghafoor, Soleen and Marcon, Magda and Konukoglu, Ender},
+  journal={arXiv preprint arXiv:1811.07767},
+  year={2018}
+}
+```
+
+== Related Projects
+
+https://github.com/junyanz/CycleGAN[CycleGAN]: Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks. Software that can generate photos from paintings, turn horses into zebras, perform style transfer, and more.
+
+== Requirements and versions:
+
+* Python 3.5
+* Git
+* Tensorflow 1.12.0
+
+*Important:* When committing, remember to be *in* the virtual environment,
+for hooks to work.
+
+*NOTE:* All code in Jupyter Notebooks is purely experimental. Use at your own risk.
+
+== Setup
+
+Make sure there is no `venv/` directory in your repository. If there is, remove it.
+Run the following commands:
+```
+./setup/create_venv.sh
+source venv/bin/activate
+```
+
+*Important:* For all commands here, we assume you are sourced into
+the virtual environment: `source venv/bin/activate`
+
+== Running the experiments
+
+=== Image conversion
+
+Put all data into the directories in `data_in/`. Supported are: `1_BCDR/`, `2_INbreast/`, `3_zrh/`, `cbis`.
+
+1. `./local/convert_images_all.sh`
+2. `./local/merge_images_all.sh`
+3. `./local/split_images_all.sh`
+4. `./local/treval_split.sh`
+
+=== GAN training
+
+1. `./local/run.sh`. Wait 24 hours.
+2. `./local/infer.sh`. Make sure to enter the correct checkpoint number here and below.
+3. `./local/to_png.sh`. Make sure to change the paths in `notebooks/inference_tfrecord_to_png.py`.
+
+
+== Jupyter notebooks
+
+*NOTE:* All code in Jupyter Notebooks is purely experimental. Use at your own risk.
+
+Save notebooks in the `notebooks/` directory.
+These can also be worked on locally using Jupyter.
+In the project root directory, you can run either:
+
+* `jupyter notebook`,
+* or `jupyter lab`.
+
+Add the following cell to your notebook, ideally in a "section":
+
+```
+# noqa
+import os
+wd = %pwd
+print('Current directory:', wd)
+if wd.endswith('notebooks'):
+    %cd ..
+```
+
+== Docker / Custom runner
+
+After you have converted images and built a Docker image using:
+`make build-cpu` or `make build-gpu` (or pulling one from the remote Docker hub),
+you can use the Docker wrapper:
+
+```
+./run_docker.sh password jupyter  # Jupyter Notebooks
+./run_docker.sh password lab  # Jupyter Lab
+./run_docker.sh password model  # Train model
+./run_docker.sh password modelboard  # Train model + run TensorBoard
+```
+
+== Directory structure
+
+* `cluster/` -- scripts for running the training/evaluation on the cluster
+* `data_in/` -- input data and associated scripts/configs
+* `data_out/` -- output data and logs + associated scripts/configs
+* `docker/` -- setup and configs for running stuff inside and outside of Docker
+* `local/` -- scripts for running the training/evaluation locally
+* `models/` -- scripts defining the models + hyperparameters
+* `notebooks/` -- data exploration and other rapid development notebooks
+** Models from here should eventually be promoted into `models/`
+* `resources/` -- Python utilities
+* `setup/` -- environment setup and verification scripts in Python/Bash
+* `venv/` -- the (local) Python virtual environment
+
+== Formatting
+
+Run: `./setup/clean.sh`.
+A Git hook will tell you if any files are misformatted before committing.
+
+== Third Party code used in this project
+
+=== ICNR
+
+https://github.com/kostyaev/ICNR by Dmitry Kostyaev
+
+Licensed under the MIT Licence.
+
+In: `models/utils/icnr.py`
+
+=== Tensor2Tensor
+
+https://github.com/tensorflow/tensor2tensor by The Tensor2Tensor Authors.
+
+Licensed under the Apache License Version 2.0.
+
+In: `models/breast_cycle_gan`
+
+=== TensorFlow, TensorFlow Models
+
+https://github.com/tensorflow/tensorflow, https://github.com/tensorflow/models by The TensorFlow Authors.
+
+Licensed under the Apache License Version 2.0.
+
+In: `models/breast_cycle_gan`
+
